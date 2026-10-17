@@ -1,0 +1,6 @@
+{
+  "name": "Script the Court - Basketball Director",
+  "description": "Script and direct every possession of NBA exhibition games: choose play outcomes, tip-off winners, injuries, fouls, and buzzer beaters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
