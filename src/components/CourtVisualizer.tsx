@@ -144,6 +144,43 @@ export const CourtVisualizer: React.FC<CourtVisualizerProps> = ({
 
     const t = playAnimationProgress; // 0 to 1
 
+    const passLines = currentPlay?.drawnPlay?.passLines || [];
+    
+    if (passLines.length > 0) {
+      const numPasses = passLines.length;
+      const passSegmentTime = 0.6 / numPasses;
+      
+      // Check if we are in a pass phase
+      if (t < 0.6) {
+        const passIdx = Math.floor(t / passSegmentTime);
+        const passT = (t % passSegmentTime) / passSegmentTime;
+        
+        const pass = passLines[passIdx];
+        const fromPlayer = offPlayers.find(p => p.id === pass.fromPlayerId);
+        const toPlayer = offPlayers.find(p => p.id === pass.toPlayerId);
+        
+        const fromPos = fromPlayer ? getOffensePlayerPosition(offPlayers.findIndex(p => p.id === fromPlayer.id)) : pass.from;
+        const toPos = toPlayer ? getOffensePlayerPosition(offPlayers.findIndex(p => p.id === toPlayer.id)) : pass.to;
+        
+        const curX = fromPos.x + (toPos.x - fromPos.x) * passT;
+        const curY = fromPos.y + (toPos.y - fromPos.y) * passT;
+        const arcZ = Math.sin(passT * Math.PI) * 22;
+        return { x: curX, y: curY, z: arcZ };
+      }
+      
+      // If pass is complete, ball follows shooter until shot
+      if (t < 0.8) {
+        return { x: shooterPos.x, y: shooterPos.y, z: 5 };
+      }
+      
+      // Shot in the air
+      const shotT = (t - 0.8) / 0.2;
+      const flightX = shooterPos.x + (targetBasketX - shooterPos.x) * shotT;
+      const flightY = shooterPos.y + (targetBasketY - shooterPos.y) * shotT;
+      const arcZ = Math.sin(shotT * Math.PI) * 60;
+      return { x: flightX, y: flightY, z: arcZ };
+    }
+
     if (hasPass) {
       if (t < 0.35) {
         // Phase 1: Ball travels from Passer to Shooter
@@ -176,7 +213,6 @@ export const CourtVisualizer: React.FC<CourtVisualizerProps> = ({
     }
 
     // SOLO ISOLATION PLAY (NO PASS)
-    // SOLO ISOLATION PLAY (NO PASS)
     if (t < 0.8) {
       // Ball follows Shooter while setting up / driving
       return { x: shooterPos.x, y: shooterPos.y, z: 5 };
@@ -186,14 +222,6 @@ export const CourtVisualizer: React.FC<CourtVisualizerProps> = ({
       const flightX = shooterPos.x + shotT * (targetBasketX - shooterPos.x);
       const flightY = shooterPos.y + shotT * (targetBasketY - shooterPos.y);
       const arcZ = Math.sin(shotT * Math.PI) * 55;
-
-      if (currentPlay.outcome === 'MISSED' && shotT > 0.85) {
-        return {
-          x: targetBasketX + (isOffenseAway ? -15 : 15) * Math.sin(shotT * 10),
-          y: targetBasketY + 20 * Math.sin(shotT * 10),
-          z: Math.max(0, 15 - (shotT - 0.85) * 40),
-        };
-      }
       return { x: flightX, y: flightY, z: arcZ };
     }
   };
@@ -576,6 +604,24 @@ export const CourtVisualizer: React.FC<CourtVisualizerProps> = ({
                 fontFamily="Archivo Black, sans-serif"
               >
                 SLAM!
+              </text>
+            </g>
+          )}
+
+          {/* Airball Text for Missed Shots */}
+          {playAnimationProgress > 0.95 && currentPlay?.outcome === 'MISSED' && (
+            <g transform={`translate(${targetBasketX}, ${targetBasketY})`}>
+              <text
+                x={isOffenseAway ? 40 : -40}
+                y="-10"
+                textAnchor="middle"
+                fill="#f43f5e"
+                fontSize="12"
+                fontWeight="900"
+                fontFamily="Archivo Black, sans-serif"
+                className="animate-pulse"
+              >
+                AIRBALL!
               </text>
             </g>
           )}

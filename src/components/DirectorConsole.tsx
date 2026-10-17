@@ -1,6 +1,6 @@
 import React from 'react';
 import { Team, Player, ScriptedPlay, PlayCategory, ShotOutcome } from '../types/game';
-import { Sparkles, Sliders, Zap, ShieldAlert, Activity, Eye, Trophy, RefreshCw, Play, Layers } from 'lucide-react';
+import { Sparkles, Sliders, Zap, ShieldAlert, Activity, Eye, Trophy, RefreshCw, Play, Layers, Users } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 
 interface DirectorConsoleProps {
@@ -13,6 +13,7 @@ interface DirectorConsoleProps {
   onQuickScript: (category: PlayCategory, outcome: ShotOutcome, extraPoints?: number, executeNow?: boolean) => void;
   onApplyScriptPreset: (presetType: 'RUN_OFFENSE' | 'CHAOS_DRAMA' | 'CLUTCH_THRILLER') => void;
   onOpenSubstitutions: () => void;
+  onOpenDepthChart: () => void;
   injuredCount: number;
 }
 
@@ -26,6 +27,7 @@ export const DirectorConsole: React.FC<DirectorConsoleProps> = ({
   onQuickScript,
   onApplyScriptPreset,
   onOpenSubstitutions,
+  onOpenDepthChart,
   injuredCount,
 }) => {
   const effectiveOffenseId = currentPlay ? currentPlay.offenseTeamId : possessionTeamId;
@@ -81,6 +83,14 @@ export const DirectorConsole: React.FC<DirectorConsoleProps> = ({
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Draw Play (Chalkboard)</span>
+          </button>
+
+          <button
+            onClick={onOpenDepthChart}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/60 text-amber-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Depth Chart</span>
           </button>
 
           <button

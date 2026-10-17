@@ -23,6 +23,7 @@ import { GameOverModal } from './components/GameOverModal';
 import { PlayDesignerModal } from './components/PlayDesignerModal';
 import { createPossessionScript, formatGameClock, generatePlayCommentary } from './utils/scriptGenerator';
 import { soundEngine } from './utils/audio';
+import { DepthChartModal } from './components/DepthChartModal';
 
 export default function App() {
   // Navigation & Sound
@@ -36,6 +37,7 @@ export default function App() {
   const [isInjuryModalOpen, setIsInjuryModalOpen] = useState<boolean>(false);
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isGameOverOpen, setIsGameOverOpen] = useState<boolean>(false);
+  const [isDepthChartOpen, setIsDepthChartOpen] = useState<boolean>(false);
 
   // Quarter intermission transition alert
   const [quarterTransition, setQuarterTransition] = useState<{ from: number; to: number; label: string } | null>(null);
@@ -309,8 +311,8 @@ export default function App() {
       const delta = (time - lastTimeRef.current) / 1000;
       lastTimeRef.current = time;
 
-      // Rate: normal play lasts ~2.4 seconds
-      const rate = (1 / 2.4) * speed;
+      // Rate: normal play lasts ~1.8 seconds (faster)
+      const rate = (1 / 1.0) * speed;
       progress += delta * rate;
 
       if (progress >= 1) {
@@ -506,6 +508,7 @@ export default function App() {
         onOpenBoxScore={() => setIsBoxScoreOpen(true)}
         onNewGame={() => setGamePhase('SETUP')}
         isGameActive={gamePhase === 'LIVE_PLAY'}
+        setIsDepthChartOpen={setIsDepthChartOpen}
       />
 
       {/* Main Game Screen */}
@@ -565,6 +568,7 @@ export default function App() {
                     onQuickScript={handleQuickScript}
                     onApplyScriptPreset={handleApplyScriptPreset}
                     onOpenSubstitutions={() => setIsInjuryModalOpen(true)}
+                    onOpenDepthChart={() => setIsDepthChartOpen(true)}
                     injuredCount={injuredCount}
                   />
                 </div>
@@ -637,6 +641,14 @@ export default function App() {
         homeTeam={homeTeam}
         awayTeam={awayTeam}
         onSubstitutePlayer={handleSubstitutePlayer}
+      />
+
+      <DepthChartModal
+        isOpen={isDepthChartOpen}
+        onClose={() => setIsDepthChartOpen(false)}
+        homeTeam={homeTeam}
+        awayTeam={awayTeam}
+        onSubstitute={handleSubstitutePlayer}
       />
 
       {/* Director's Guide Modal */}

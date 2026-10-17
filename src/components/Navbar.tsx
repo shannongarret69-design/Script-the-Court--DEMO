@@ -9,6 +9,7 @@ interface NavbarProps {
   onOpenBoxScore: () => void;
   onNewGame: () => void;
   isGameActive: boolean;
+  setIsDepthChartOpen: (open: boolean) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenBoxScore,
   onNewGame,
   isGameActive,
+  setIsDepthChartOpen,
 }) => {
   return (
     <header className="flex items-center justify-between gap-8 px-6 py-4 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
@@ -48,6 +50,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
           >
             Live Box Score
+          </button>
+        )}
+        {isGameActive && (
+          <button
+            onClick={() => setIsDepthChartOpen(true)}
+            className="hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
+          >
+            Depth Chart
           </button>
         )}
         <span className="text-slate-600">·</span>
