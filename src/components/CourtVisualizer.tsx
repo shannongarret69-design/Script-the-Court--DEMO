@@ -152,34 +152,37 @@ export const CourtVisualizer: React.FC<CourtVisualizerProps> = ({
         const curY = passerPosCoords.y + (shooterPos.y - passerPosCoords.y) * pT;
         const arcZ = Math.sin(pT * Math.PI) * 22;
         return { x: curX, y: curY, z: arcZ };
-      } else if (t < 0.55) {
-        // Phase 2: Ball follows Shooter while gathering / dribbling
-        return { x: shooterPos.x, y: shooterPos.y, z: 5 };
-      } else {
-        // Phase 3: Shot in the air towards the hoop
-        const shotT = (t - 0.55) / 0.45;
-        const flightX = shooterPos.x + (targetBasketX - shooterPos.x) * shotT;
-        const flightY = shooterPos.y + (targetBasketY - shooterPos.y) * shotT;
-        const arcZ = Math.sin(shotT * Math.PI) * 60;
-
-        if (currentPlay.outcome === 'MISSED' && shotT > 0.85) {
-          return {
-            x: targetBasketX + (isOffenseAway ? -15 : 15) * Math.sin(shotT * 10),
-            y: targetBasketY + 20 * Math.sin(shotT * 10),
-            z: Math.max(0, 15 - (shotT - 0.85) * 40),
-          };
-        }
-        return { x: flightX, y: flightY, z: arcZ };
       }
+      
+      // If pass is complete, ball follows shooter until shot
+      if (t < 0.55) {
+        return { x: shooterPos.x, y: shooterPos.y, z: 5 };
+      }
+      
+      // Shot in the air
+      const shotT = (t - 0.55) / 0.45;
+      const flightX = shooterPos.x + (targetBasketX - shooterPos.x) * shotT;
+      const flightY = shooterPos.y + (targetBasketY - shooterPos.y) * shotT;
+      const arcZ = Math.sin(shotT * Math.PI) * 60;
+
+      if (currentPlay.outcome === 'MISSED' && shotT > 0.85) {
+        return {
+          x: targetBasketX + (isOffenseAway ? -15 : 15) * Math.sin(shotT * 10),
+          y: targetBasketY + 20 * Math.sin(shotT * 10),
+          z: Math.max(0, 15 - (shotT - 0.85) * 40),
+        };
+      }
+      return { x: flightX, y: flightY, z: arcZ };
     }
 
     // SOLO ISOLATION PLAY (NO PASS)
-    if (t < 0.4) {
-      // Phase 1: Ball follows Shooter while setting up / driving
+    // SOLO ISOLATION PLAY (NO PASS)
+    if (t < 0.8) {
+      // Ball follows Shooter while setting up / driving
       return { x: shooterPos.x, y: shooterPos.y, z: 5 };
     } else {
       // Phase 2: Shot in the air towards the hoop
-      const shotT = (t - 0.4) / 0.6;
+      const shotT = (t - 0.8) / 0.2;
       const flightX = shooterPos.x + shotT * (targetBasketX - shooterPos.x);
       const flightY = shooterPos.y + shotT * (targetBasketY - shooterPos.y);
       const arcZ = Math.sin(shotT * Math.PI) * 55;

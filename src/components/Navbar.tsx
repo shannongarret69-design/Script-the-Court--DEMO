@@ -27,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Clapperboard className="w-4 h-4" />
         </div>
         <span className="text-lg font-black tracking-wider uppercase font-display text-white flex items-center gap-2">
-          <span>Script The Court</span>
+          <span>Script The Court Demo</span>
           <span className="text-[10px] font-mono font-bold bg-amber-500/20 border border-amber-500/40 text-amber-400 px-1.5 py-0.5 rounded">
             DEMO
           </span>
